@@ -1,0 +1,38 @@
+# For Processing in Python mode - creates a sort of evolving mandala
+
+speed=0.007
+spoke_num = 200
+r = 100 # support radius
+l = r*.9 # rod length
+xoo = 250
+yoo = 250
+xo = [r * cos(n*TWO_PI/spoke_num) for n in range(spoke_num)]
+yo = [r * sin(n*TWO_PI/spoke_num) for n in range(spoke_num)]
+angle = [n * TWO_PI/spoke_num for n in range(spoke_num)]
+start_z = 3*angle #maybe this is like trefoil?  hmm
+
+def setup():
+    size(500,500,P3D)
+    frameRate(60)
+  
+def draw():
+    background(0)
+    translate(xoo, yoo, 0)
+    
+    strokeWeight(1)
+    stroke(168)
+    noFill()
+    arc(0, 0, r*2, r*2, 0, TWO_PI)
+
+    strokeWeight(2)
+    stroke(255, 20)
+    for n in range(spoke_num):
+        pushMatrix()
+        translate(xo[n], yo[n])
+        rotateZ(start_z[n] + angle[n] * frameCount * speed)
+        line(l*cos(angle[n]), l*sin(angle[n]), 0, -l*cos(angle[n]), -l*sin(angle[n]), 0)
+        popMatrix()
+
+    # frame saving for movies    
+    #i = frameCount + 1000000
+    #saveFrame("movie2/frame-"+str(i)+".tif")
