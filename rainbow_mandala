@@ -1,0 +1,64 @@
+# For Processing in Python mode - creates a sort of evolving mandala, rainbow-colored as a function of the rotation about Z
+
+speed=0.007
+spoke_num = 2000
+r = 100 # support radius
+l = r*1.2 # rod length
+xoo = 250
+yoo = 250
+xo = [r * cos(n*TWO_PI/spoke_num) for n in range(spoke_num)]
+yo = [r * sin(n*TWO_PI/spoke_num) for n in range(spoke_num)]
+angle = [n * TWO_PI/spoke_num for n in range(spoke_num)]
+start_z = 3*angle #maybe this is like trefoil?  hmm
+recording = "off"
+
+def setup():
+    size(500,500,P3D)
+    frameRate(60)
+    println('----------')
+    println('Start')
+    println('----------')
+  
+def draw():
+    global recording
+    background(0)
+    translate(xoo, yoo, 0)
+    
+    strokeWeight(1)
+    stroke(168)
+    noFill()
+    arc(0, 0, r*2, r*2, 0, TWO_PI)
+
+    strokeWeight(2)
+    stroke(255, 20)
+    for n in range(spoke_num):
+        pushMatrix()
+        translate(xo[n], yo[n])
+        z_rot = start_z[n] + angle[n] * frameCount * speed
+        c = sin(z_rot)
+        cr, cg, cb = rainbow(c)
+        stroke(cr, cg, cb, 20)
+        rotateZ(z_rot)
+        line(l*cos(angle[n]), l*sin(angle[n]), 0, -l*cos(angle[n]), -l*sin(angle[n]), 0)
+        popMatrix()
+    # frame saving for movies    
+    if mousePressed:
+        if recording == "off" :
+            recording = "on"
+            println(mousePressed) 
+            println("recording toggled on")
+        else:  
+            recording = "off"
+            println(mousePressed)
+            println("recording toggled off")
+    
+    if recording == "on":
+        i = frameCount + 1000000
+        saveFrame("movie_1/frame-"+str(i)+".tif")
+    
+def rainbow(c):
+    i = (c * 255)
+    r = int(sin(0.024 * i + 0) * 127 + 128)
+    g = int(sin(0.024 * i + 2) * 127 + 128)
+    b = int(sin(0.024 * i + 4) * 127 + 128)
+    return r, g, b
